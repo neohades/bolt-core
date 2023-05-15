@@ -67,7 +67,7 @@
         "symfony/webpack-encore-bundle": "^1.7",
         "symfony/yaml": "^5.1",
         "symplify/package-builder": "^8.0",
-        "tightenco/collect": "^7.25",
+        "tightenco/collect": "^8.16.0",
         "twig/twig": "^3.0",
         "ua-parser/uap-php": "^3.9",
         "webimpress/safe-writer": "^2.1",
