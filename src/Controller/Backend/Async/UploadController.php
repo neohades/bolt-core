@@ -210,6 +210,10 @@ class UploadController extends AbstractController implements AsyncZoneInterface
                     $this->em->flush();
                 }
 
+                if ($this->isPdf($media)) 
+                    $this->removePdfMetadata($media, $basepath);
+                
+
                 return new JsonResponse($media->getFilenamePath());
             } catch (\Throwable $e) {
                 // something wrong happened, we don't need the uploaded files anymore
@@ -253,6 +257,38 @@ class UploadController extends AbstractController implements AsyncZoneInterface
         }
 
         return (mb_strpos(preg_replace('/\s+/', '', mb_strtolower($svgFile)), '<script') === false);
+    }
+
+
+    private function isPdf($media): bool
+    {
+        return $media->getType() === 'pdf';
+    }
+
+    private function removePdfMetadata($media, $basePath): void
+    {
+
+        $sourcePdfPath = $media->getFilenamePath();
+        $outputPdfPath = $basePath.'/'.$sourcePdfPath; // Zastąp to odpowiednią ścieżką wyjściową, jeśli chcesz zachować oryginalny plik
+
+        $pdf = new Fpdi();
+        $pageCount = $pdf->setSourceFile($outputPdfPath);
+        for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
+    
+            $pdf->AddPage();
+       
+
+            $templateId = $pdf->importPage($pageNumber);
+            $pdf->useTemplate($templateId);
+
+            $pdf->SetTitle('');
+            $pdf->SetAuthor('');
+            $pdf->SetSubject('');
+            $pdf->SetKeywords('');
+            $pdf->SetCreator('');
+        }
+
+        $pdf->Output($outputPdfPath, 'F');
     }
 }
 
