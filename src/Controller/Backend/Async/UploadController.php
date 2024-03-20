@@ -30,6 +30,8 @@ use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Throwable;
 
+use setasign\Fpdi\Fpdi;
+
 /**
  * @Security("is_granted('upload')")
  */
