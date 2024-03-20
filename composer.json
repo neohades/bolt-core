@@ -87,7 +87,7 @@
         "webonyx/graphql-php": "^14.9",
         "xemlock/htmlpurifier-html5": "^0.1.11",
         "setasign/fpdf": "^1.8",
-        "setasign/fpdi": "^2.6",
+        "setasign/fpdi": "^2.6"
     },
     "conflict": {
         "symfony/dependency-injection": "5.3.7",
