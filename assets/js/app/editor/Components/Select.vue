@@ -27,20 +27,16 @@
                 {{ props.option.value | raw }}
             </template>
             <template v-if="name !== 'status'" slot="tag" slot-scope="props">
-                <span :class="{ empty: props.option.value == '' }" @drop="drop($event)" @dragover="allowDrop($event)">
+                <span :class="{ empty: props.option.value == '' }">
                     <span
                         :id="props.option.key"
                         :key="props.option.value"
                         class="multiselect__tag"
                         :draggable="!taggable"
-                        @dragstart="drag($event)"
-                        @dragover="dragOver($event)"
-                        @dragleave="dragLeave($event)"
-                        @dragend="dragEnd($event)"
                     >
-                        <div v-if="!taggable" class="multiselect__tag__drag">
+                        <!-- <div v-if="!taggable" class="multiselect__tag__drag">
                             <i class="fas fa-arrows-alt"></i>
-                        </div>
+                        </div> -->
                         <!-- eslint-disable-next-line vue/no-v-html -->
                         <span v-html="props.option.value"></span>
                         <i
@@ -49,6 +45,8 @@
                             @keypress.enter.prevent="removeElement(props.option)"
                             @mousedown.prevent="removeElement(props.option)"
                         ></i>
+                        <i tabindex="2" class="fas fa-fw fa-chevron-up" @mousedown.prevent="moveUp(props.option.key)"></i>
+                        <i tabindex="3" class="fas fa-fw fa-chevron-down" @mousedown.prevent="moveDown(props.option.key)"></i>
                     </span>
                 </span>
             </template>
@@ -160,6 +158,28 @@ export default {
 
             this.selected.splice(incomingIndex, 1);
             this.selected.splice(newPosition, 0, incomingElement);
+        },
+        moveUp(element) {
+            const movableId = element;
+            const movableElement = this.selected.find(el => '' + el.key === '' + movableId);
+
+            const movableIndex = this.selected.indexOf(movableElement);
+            const newPosition = movableIndex - 1;
+            if(newPosition<0)
+                newPosition = 0;
+
+            this.selected.splice(movableIndex, 1);
+            this.selected.splice(newPosition, 0, movableElement);
+        },
+        moveDown(element) {
+            const movableId = element;
+            const movableElement = this.selected.find(el => '' + el.key === '' + movableId);
+
+            const movableIndex = this.selected.indexOf(movableElement);
+            const newPosition = movableIndex + 1;
+            
+            this.selected.splice(movableIndex, 1);
+            this.selected.splice(newPosition, 0, movableElement);
         },
         findDropElement(el) {
             while (!el.hasAttribute('draggable')) {
