@@ -107,6 +107,15 @@ class UserType extends AbstractType
                     'extensions_allowed' => $this->avatarConfig->get('extensions_allowed'),
                 ],
             ])
+            ->add('psn', TextType::class, [
+                'required' => false,
+            ])
+            ->add('itsm', TextType::class, [
+                'required' => false,
+            ])
+            ->add('description', TextType::class, [
+                'required' => false,
+            ])
         ;
 
         /*

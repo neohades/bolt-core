@@ -180,6 +180,52 @@
     {% do userForm.avatar.setRendered() %}
 
 
+    {# ===== PSN ===== #}
+
+    {% include '@bolt/_partials/fields/text.html.twig' with {
+        'id' : userForm.psn.vars.id,
+        'label' : 'label.psn'|trans,
+        'name' : userForm.vars.name ~ '[' ~ userForm.psn.vars.name ~ ']',
+        'value' : userForm.psn.vars.value,
+        'disabled' : false,
+        'required': userForm.psn.vars.required,
+    } %}
+    {% if form_errors(userForm.psn) is not empty %}
+        <div class="field-error">{{ form_errors(userForm.psn) }}</div>
+    {% endif %}
+    {% do userForm.psn.setRendered() %}
+
+    {# ===== itsm ===== #}
+
+    {% include '@bolt/_partials/fields/text.html.twig' with {
+        'id' : userForm.itsm.vars.id,
+        'label' : 'label.itsm'|trans,
+        'name' : userForm.vars.name ~ '[' ~ userForm.itsm.vars.name ~ ']',
+        'value' : userForm.itsm.vars.value,
+        'disabled' : false,
+        'required': userForm.itsm.vars.required,
+    } %}
+    {% if form_errors(userForm.itsm) is not empty %}
+        <div class="field-error">{{ form_errors(userForm.itsm) }}</div>
+    {% endif %}
+    {% do userForm.itsm.setRendered() %}
+
+    {# ===== description ===== #}
+
+    {% include '@bolt/_partials/fields/text.html.twig' with {
+        'id' : userForm.description.vars.id,
+        'label' : 'label.description'|trans,
+        'name' : userForm.vars.name ~ '[' ~ userForm.description.vars.name ~ ']',
+        'value' : userForm.description.vars.value,
+        'disabled' : false,
+        'required': userForm.description.vars.required,
+    } %}
+    {% if form_errors(userForm.description) is not empty %}
+        <div class="field-error">{{ form_errors(userForm.description) }}</div>
+    {% endif %}
+    {% do userForm.description.setRendered() %}
+
+
 {# TODO: include form field with '@bolt/_partials/fields/select.html.twig' #}
     {# Comment out for a while, until we work on this again
         <div class="form-group">
