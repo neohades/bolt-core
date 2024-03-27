@@ -34,6 +34,8 @@
                         class="multiselect__tag"
                         :draggable="!taggable"
                     >
+                        <i tabindex="2" class="fas fa-fw fa-chevron-up" @mousedown.prevent="moveUp(props.option.key)"></i>
+                        <i tabindex="3" class="fas fa-fw fa-chevron-down" @mousedown.prevent="moveDown(props.option.key)"></i>
                         <!-- <div v-if="!taggable" class="multiselect__tag__drag">
                             <i class="fas fa-arrows-alt"></i>
                         </div> -->
@@ -45,8 +47,6 @@
                             @keypress.enter.prevent="removeElement(props.option)"
                             @mousedown.prevent="removeElement(props.option)"
                         ></i>
-                        <i tabindex="2" class="fas fa-fw fa-chevron-up" @mousedown.prevent="moveUp(props.option.key)"></i>
-                        <i tabindex="3" class="fas fa-fw fa-chevron-down" @mousedown.prevent="moveDown(props.option.key)"></i>
                     </span>
                 </span>
             </template>

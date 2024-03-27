@@ -28,8 +28,13 @@
                     <span class="badge badge-secondary inline" :title="element.label">
                         <i :class="[element.icon, 'fas']"></i>
                     </span>
-                    <div class="collection-item-title" :data-label="element.label">
-                        {{ element.label }}
+                    <div class="d-flex align-items-center flex-wrap">
+                        <div class="collection-set-title w-100">
+                            <small>{{ element.label }}</small>
+                        </div>
+                        <div class="collection-item-title" :data-label="element.label">
+                            {{ element.label }}
+                        </div>
                     </div>
                     <!-- Navigation buttons -->
                     <div :is="compile(element.buttons)"></div>
@@ -220,7 +225,7 @@ export default {
                 .first();
             // We use this 'innerText' trick to ensure the title is plain text.
             var title = document.createElement('span');
-            title.innerHTML = $(input).val() ? $(input).val() : label.attr('data-label');
+            title.innerHTML = $(input).val() ? $(input).val() : '';
             label.html(title.innerText);
         }
         /**
