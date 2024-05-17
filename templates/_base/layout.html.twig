@@ -1,5 +1,7 @@
 {# Check if aside has value and set hasAside variable #}
 {% set hasAside = block('aside')|trim is not empty ? true : false %}
+{% set currentService = app.session.get('CURRENT_SERVICE') %}
+
 <!DOCTYPE html>
 <html lang="{{ app.user.locale|default() }}" {% if block('html_id') %}id="{% block html_id %}{% endblock %}"{% endif %}>
 
@@ -18,6 +20,7 @@
 
 <body>
 <div class="admin">
+        
     {% set admin_menu_json = admin_menu_array()|json_encode %}
 
     <!-- Admin Toolbar -->
@@ -35,7 +38,7 @@
         {# Setting the labels and their localisations that are used in the sidebar-menu. #}
         {% set labels = {
             'about.bolt_documentation': 'about.bolt_documentation'|trans,
-            'action.view_site': config.get('general/sitename'),
+            'action.view_site': ( currentService ? 'SERWIS: '~currentService : config.get('general/sitename')),
             'general.greeting': 'general.greeting'|trans({'%name%': user_display_name}),
             'action.logout': 'action.logout'|trans,
             'action.stop_impersonating': 'action.stop_impersonating'|trans,
@@ -53,7 +56,7 @@
         }|json_encode %}
 
         <admin-toolbar
-            site-name="{{ config.get('general/sitename') }}"
+            site-name="{{ ( currentService ? 'SERWIS: '~currentService : config.get('general/sitename')) }}"
             :menu="{{ admin_menu_json }}"
             :labels="{{ labels }}"
             :url-paths="{{ url_paths }}"
@@ -62,6 +65,7 @@
             :is-impersonator="{{ is_granted('IS_IMPERSONATOR')|json_encode }}"
             filter-value="{{ filter_value|default('') }}"
         ></admin-toolbar>
+
     </nav>
     <!-- End Admin Toolbar -->
 
@@ -94,6 +98,29 @@
     }|json_encode %}
     <div class="admin__sidebar">
         <div class="sidebar sidebar--sticky" id="bolt--sidebar">
+            
+            {# wybór serwisów #}
+
+            <div style="width:100%; background:#C0E1F3; padding:0.5rem 1rem; color:#000">
+                <div class="">Wybierz serwis</div>
+                <select id="serviceName" style="width:100%; margin:0.5rem 0; border:1px solid #C0E1F3; font-size:14px; padding:5px 10px" onchange="changeService();">
+                    <option value="main">santander.consumer</option>
+                    {% for domain in config.get('theme/subdomains') %}
+                        <option value="{{ domain }}" {% if currentService is defined and (currentService == domain) %}selected{% endif %}>{{ domain }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <script type="text/javascript">
+                function changeService(){
+                    let serviceName = document.getElementById("serviceName").value;
+                    serviceName = serviceName.replace(/[^\w\s]/gi, '');
+                    window.location.href = "/bolt/microservice/"+serviceName;
+                }
+            </script>
+
+            {# koniec: wybór serwisów #}
+
             <admin-sidebar
               :menu="{{ admin_menu_json }}"
               :version="'{{ constant('Bolt\\Version::VERSION')|replace({'alpha': 'α', 'beta': 'β'}) }}'"
