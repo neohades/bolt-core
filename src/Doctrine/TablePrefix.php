@@ -37,9 +37,9 @@ class TablePrefix
             uwaga! zmienna może pokazać coś innego niż nazwę hosta
         */
 
-        $subdomain = $this->extractSubdomain($_SERVER['SERVER_NAME']);
+        $subdomain = $this->extractSubdomain($_SERVER['SERVER_NAME'] ?? '');
         $sessionSubdomain = $this->session->get('CURRENT_SERVICE');;
-        $checkIfAdminUrl = $this->checkIfAdminUrl($_SERVER['REQUEST_URI']);
+        $checkIfAdminUrl = $this->checkIfAdminUrl($_SERVER['REQUEST_URI'] ?? '');
 
         if( $sessionSubdomain && $checkIfAdminUrl )
             $subdomainBasedPrefix = $this->checkIfSubdomainIsAllowed( $sessionSubdomain );
