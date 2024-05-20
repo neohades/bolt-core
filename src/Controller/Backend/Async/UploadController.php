@@ -271,26 +271,51 @@ class UploadController extends AbstractController implements AsyncZoneInterface
     {
 
         $sourcePdfPath = $media->getFilenamePath();
-        $outputPdfPath = $basePath.'/'.$sourcePdfPath; // Zastąp to odpowiednią ścieżką wyjściową, jeśli chcesz zachować oryginalny plik
+        $outputPdfPath = $basePath.'/'.$sourcePdfPath; 
 
         $pdf = new Fpdi();
-        $pageCount = $pdf->setSourceFile($outputPdfPath);
-        for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
-    
-            $pdf->AddPage();
-       
+        $pdfVersion = $this->getPdfVersion($outputPdfPath);
+        if(floatval($pdfVersion) <= 1.4)
+        {
+            $pageCount = $pdf->setSourceFile($outputPdfPath);
+            for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
+        
+                $pdf->AddPage();
+           
 
-            $templateId = $pdf->importPage($pageNumber);
-            $pdf->useTemplate($templateId);
+                $templateId = $pdf->importPage($pageNumber);
+                $pdf->useTemplate($templateId);
 
-            $pdf->SetTitle('');
-            $pdf->SetAuthor('');
-            $pdf->SetSubject('');
-            $pdf->SetKeywords('');
-            $pdf->SetCreator('');
+                $pdf->SetTitle('');
+                $pdf->SetAuthor('');
+                $pdf->SetSubject('');
+                $pdf->SetKeywords('');
+                $pdf->SetCreator('');
+            }
+
+            $pdf->Output($outputPdfPath, 'F');
         }
+    }
 
-        $pdf->Output($outputPdfPath, 'F');
+    private function getPdfVersion($filePath) {
+        $fp = fopen($filePath, 'rb');
+        if (!$fp) {
+            throw new Exception("Nie można otworzyć pliku PDF.");
+        }
+        
+        $version = null;
+        $line = fgets($fp, 10); // Odczytaj pierwsze 9 znaków
+        if (strpos($line, '%PDF-') === 0) {
+            $version = substr($line, 5); // Pobierz wersję po '%PDF-'
+        }
+        
+        fclose($fp);
+        
+        if ($version === null) {
+            throw new Exception("Nie udało się odczytać wersji PDF.");
+        }
+        
+        return trim($version);
     }
 }
 
