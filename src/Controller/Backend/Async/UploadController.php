@@ -212,9 +212,9 @@ class UploadController extends AbstractController implements AsyncZoneInterface
                     $this->em->flush();
                 }
 
-                if ($this->isPdf($media)) {
-                    $this->removePdfMetadata($media, $basepath);
-                }
+                // if ($this->isPdf($media)) {
+                //     $this->removePdfMetadata($media, $basepath);
+                // }
 
                 return new JsonResponse($media->getFilenamePath());
             } catch (\Throwable $e) {
