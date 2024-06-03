@@ -9,6 +9,7 @@ use Bolt\Controller\TwigAwareController;
 use Bolt\Repository\ContentRepository;
 use Bolt\Utils\ContentHelper;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DetailController extends TwigAwareController implements FrontendZoneInterface, DetailControllerInterface
@@ -72,5 +73,14 @@ class DetailController extends TwigAwareController implements FrontendZoneInterf
         $this->contentHelper->setCanonicalPath($record);
 
         return $this->renderSingle($record);
+    }
+
+    public function getCspHeader(): JsonResponse{
+        $contentType = ContentType::factory('settings', $this->config->get('contenttypes'));
+        $recordCsp = $this->contentRepository->findOneByFieldValue('key_name', 'csp::text', $contentType);
+        if( $recordCsp->getFieldValue('content') )
+            return new JsonResponse([ 'csp'=> strip_tags( $recordCsp->getFieldValue('content') ) ]);
+        else
+            return new JsonResponse([ 'csp'=> false ]);
     }
 }
