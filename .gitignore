@@ -1,7 +1,7 @@
 composer.phar
 
 ### Built Assets and uploads ###
-# /public/assets/
+/public/assets/
 /public/files/*
 !/public/files/.gitkeep
 !/public/files/index.html
