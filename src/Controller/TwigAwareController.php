@@ -101,7 +101,7 @@ class TwigAwareController extends AbstractController
             $recordCsp = $this->forward('Bolt\Controller\Frontend\DetailController::getCspHeader');
             if($recordCsp){
                 $csp = json_decode($recordCsp->getContent(), true);
-                $response->headers->set('Content-Security-Policy', $csp['csp']);
+                $response->headers->set('Content-Security-Policy', trim($csp['csp']));
             }
         }
 
