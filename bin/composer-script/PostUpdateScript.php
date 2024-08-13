@@ -13,7 +13,7 @@ class PostUpdateScript extends Script
         self::runPHP(['vendor/bolt/core/bin/fix-bundles']);
         self::runPHP(['vendor/bobdenotter/yaml-migrations/bin/yaml-migrate', 'process', '-c', 'vendor/bolt/core/yaml-migrations/config.yaml', '-v']);
         self::runConsole(['cache:clear', '--no-warmup', '--ansi']);
-        self::runConsole(['assets:install', '--symlink', '--relative', 'public', '--ansi']);
+        // self::runConsole(['assets:install', '--symlink', '--relative', 'public', '--ansi']);
         self::runConsole(['bolt:copy-assets', '--ansi']);
         self::runConsole(['extensions:configure', '--with-config', '--ansi']);
 

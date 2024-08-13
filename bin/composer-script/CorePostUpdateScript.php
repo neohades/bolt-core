@@ -23,7 +23,7 @@ class CorePostUpdateScript extends Script
 
         self::runConsole(['extensions:configure', '--with-config', '--ansi']);
         self::runConsole(['cache:clear', '--no-warmup']);
-        self::runConsole(['assets:install', '--symlink', '--relative', 'public']);
+        // self::runConsole(['assets:install', '--symlink', '--relative', 'public']);
         self::runConsole(['doctrine:migrations:migrate', '--no-interaction']);
 
         $res = self::runConsole(['doctrine:migrations:up-to-date']);
