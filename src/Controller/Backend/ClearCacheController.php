@@ -19,11 +19,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class ClearCacheController extends AbstractController implements BackendZoneInterface
 {
     /**
-     * @Route("/clearcache", name="bolt_clear_cache")
+     * @Route("/clearcache/{redirect}", name="bolt_clear_cache")
      */
-    public function index(KernelInterface $kernel): Response
+    public function index(KernelInterface $kernel, string $redirect = null): Response
     {
         $output = $this->clearcache($kernel);
+
+        if($redirect)
+            return $this->redirectToRoute('bolt_dashboard');
 
         $this->addFlash('success', 'label.cache_cleared');
 

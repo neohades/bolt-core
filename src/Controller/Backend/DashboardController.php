@@ -9,14 +9,21 @@ use Bolt\Storage\Query;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 class DashboardController extends TwigAwareController implements BackendZoneInterface
 {
     /**
      * @Route("/", name="bolt_dashboard", methods={"GET"})
      */
-    public function index(Query $query): Response
+    public function index(Query $query, SessionInterface $session): Response
     {
         $this->denyAccessUnlessGranted('dashboard');
+
+        if($this->isGranted('ROLE_ADMIN_HR') && $session->get('CURRENT_SERVICE')!='kariera'){
+            $session->set('CURRENT_SERVICE', 'kariera');
+            return $this->redirect('/bolt/clearcache/redirect');
+        }
 
         // TODO PERMISSIONS: implement listing that only lists content that the user is allowed to see
         $amount = (int) $this->config->get('general/records_per_page', 10);
