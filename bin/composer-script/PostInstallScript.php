@@ -11,8 +11,8 @@ class PostInstallScript extends Script
         parent::init('Running composer "post-install-cmd" scripts');
 
         self::runConsole(['cache:clear', '--no-warmup', '--ansi']);
-        self::runConsole(['assets:install', '--symlink', '--relative', 'public', '--ansi']);
-        self::runConsole(['bolt:copy-assets', '--ansi']);
+        // self::runConsole(['assets:install', '--symlink', '--relative', 'public', '--ansi']);
+        // self::runConsole(['bolt:copy-assets', '--ansi']);
         self::runConsole(['extensions:configure', '--with-config', '--ansi']);
 
         // Only run, if the tables are initialised already, _and_ Doctrine thinks we need to

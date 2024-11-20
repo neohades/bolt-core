@@ -23,7 +23,7 @@ class CorePostInstallScript extends Script
 
         self::runConsole(['extensions:configure', '--with-config', '--ansi']);
         self::runConsole(['cache:clear', '--no-warmup']);
-        self::runConsole(['assets:install', '--symlink', '--relative', 'public']);
+        // self::runConsole(['assets:install', '--symlink', '--relative', 'public']);
         self::runConsole(['bolt:info', '--ansi']);
     }
 }
