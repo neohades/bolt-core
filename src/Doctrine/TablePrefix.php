@@ -10,14 +10,32 @@ use Doctrine\Persistence\ManagerRegistry;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
+use Doctrine\DBAL\Connection;
+
+
 class TablePrefix
 {
     use TablePrefixTrait;
     private $session;
+    /** @var Connection */
+    private $connection;
 
-    public function __construct($tablePrefix, ManagerRegistry $managerRegistry, SessionInterface $session)
+    private array $microservices;
+
+    public function __construct(Connection $connection, $tablePrefix, ManagerRegistry $managerRegistry, SessionInterface $session, array $microservices = [])
     {
+        $this->connection = $connection;
         $this->session = $session;
+        try {
+            $sql = "SELECT * FROM bolt_microservice WHERE active=1";
+            $result = $this->connection->fetchAllAssociative($sql);
+
+            foreach ($result as $row) {
+                $microservices[$row['domain']] = $row['prefix'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) { 
+        }
+        $this->microservices = $microservices;
         $this->setTablePrefixes($tablePrefix, $managerRegistry);
 
         // var_dump('vendor/bolt/core/src/Doctrine/TablePrefix.php:_construct', $this->tablePrefixes);
@@ -30,24 +48,23 @@ class TablePrefix
         $schemaManager = $entityManager->getConnection()->getSchemaManager();
         $tablesInDB = $schemaManager->listTableNames();
        
-
         $tablePrefix = $this->getTablePrefix($entityManager);
-        
-        /* INFO
-            uwaga! zmienna może pokazać coś innego niż nazwę hosta
-        */
 
-        $subdomain = $this->extractSubdomain($_SERVER['SERVER_NAME'] ?? '');
-        $sessionSubdomain = $this->session->get('CURRENT_SERVICE');;
-        $checkIfAdminUrl = $this->checkIfAdminUrl($_SERVER['REQUEST_URI'] ?? '');
+        if($this->microservices){
+            $domain = $_SERVER['SERVER_NAME'];
 
-        if( $sessionSubdomain && $checkIfAdminUrl )
-            $subdomainBasedPrefix = $this->checkIfSubdomainIsAllowed( $sessionSubdomain );
-        else
-            $subdomainBasedPrefix = $this->checkIfSubdomainIsAllowed( $subdomain );
+            $sessionPrefix = $this->session->get('CURRENT_SERVICE');
 
-        if($subdomainBasedPrefix){
-            $tablePrefix = $subdomainBasedPrefix;
+            $checkIfAdminUrl = $this->checkIfAdminUrl($_SERVER['REQUEST_URI'] ?? '/');
+
+            if( $sessionPrefix && $checkIfAdminUrl )
+                $domainBasedPrefix = $this->checkIfPrefixIsAllowed( $sessionPrefix );
+            else
+                $domainBasedPrefix = $this->checkIfPrefixIsAllowed( $this->microservices[$domain] ?? 'bolt' );
+
+            if($domainBasedPrefix){
+                $tablePrefix = $domainBasedPrefix;
+            }
         }
 
         if ($tablePrefix) {
@@ -79,11 +96,11 @@ class TablePrefix
         }
     }
 
-    private function checkIfSubdomainIsAllowed(string $subdomain): string|bool {
-
+    private function checkIfPrefixIsAllowed(string $checkedPrefix): string|bool {
+// var_dump($this->tablePrefixes);
         if(!empty($this->tablePrefixes)){
             foreach($this->tablePrefixes as $prefix){
-                if($prefix == $subdomain.'_'){
+                if($prefix == $checkedPrefix.'_'){
                     return $prefix;
                 }
             }
