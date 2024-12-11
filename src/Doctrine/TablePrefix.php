@@ -51,7 +51,7 @@ class TablePrefix
         $tablePrefix = $this->getTablePrefix($entityManager);
 
         if($this->microservices){
-            $domain = $_SERVER['SERVER_NAME'];
+            $domain = $_SERVER['SERVER_NAME'] ?? 'default';
 
             $sessionPrefix = $this->session->get('CURRENT_SERVICE');
 
