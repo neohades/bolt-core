@@ -22,4 +22,31 @@
         :localize='{{ field.definition.localize|json_encode }}'
         :is-new='{{ isnew|json_encode }}'
     ></editor-slug>
+
+    <div class="d-flex align-items-center">
+        <div class="text-right btn btn-info mb-0 mr-3" onclick="copyToClipboard()">Kopiuj</div>
+        <div class="clickboard-info"></div>
+    </div>
+    <script>
+        function copyToClipboard() {
+            
+            const inputElement = document.querySelector("[name='{{ name }}']");
+            const clickboardInfo = document.querySelector('.clickboard-info');
+            let inputValue = inputElement.value;
+            let info = "Skopiowano do schowka!";
+
+            {% if record.definition.singular_slug == 'contactcase' %}
+                inputValue = '#' + inputElement.value;
+                info = "Skopiowano do schowka! Doklej fragment do adresu formularza z dodanym tematem";
+            {% endif %}
+
+            navigator.clipboard.writeText(inputValue)
+                .then(() => {
+                    clickboardInfo.innerHTML = info;
+                })
+                .catch(err => {
+                     clickboardInfo.innerHTML = "Błąd kopiowania";
+                });
+        }
+    </script>
 {% endblock %}

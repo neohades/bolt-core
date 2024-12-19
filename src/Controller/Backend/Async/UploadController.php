@@ -156,9 +156,18 @@ class UploadController extends AbstractController implements AsyncZoneInterface
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        // $uploadHandler = new Handler($target, [
+        //     Handler::OPTION_AUTOCONFIRM => true,
+        //     Handler::OPTION_OVERWRITE => false,
+        // ]);
+        
+        $cookieSaveOldName = false;
+        if($request->cookies->get('saveOldName') === '1')
+            $cookieSaveOldName = $request->cookies->get('saveOldName');
+
         $uploadHandler = new Handler($target, [
             Handler::OPTION_AUTOCONFIRM => true,
-            Handler::OPTION_OVERWRITE => false,
+            Handler::OPTION_OVERWRITE => $cookieSaveOldName,
         ]);
 
         $acceptedFileTypes = array_merge($this->config->getMediaTypes()->toArray(), $this->config->getFileTypes()->toArray());

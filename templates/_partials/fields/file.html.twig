@@ -10,7 +10,7 @@
     {% if setPath is not defined %}
         {% set setPath = field.definition.get('upload')|placeholders({'contenttype': record.contenttype}) %}
     {% endif %}
-    {% set directory = path('bolt_async_upload', {'location': location|default('files'), 'path': setPath}) %}
+    {% set directory = path('bolt_async_upload', {'location': location|default('files'), 'path': setPath }) %}
     {% set filelist = path('bolt_async_filelisting', {'location': location|default('files') }) %}
     {% set labels = {
         'button_upload': 'image.button_upload'|trans,
@@ -22,6 +22,42 @@
         'placeholder_title': 'image.placeholder_title'|trans,
         'button_edit_attributes': 'image.button_edit_attributes'|trans,
     }|json_encode %}
+
+    <div id="field--field-save_old_filename" class="form-group is-normal mt-4">
+        <div>
+            <div class="d-flex">
+                <div id="saveOldFilenameBg" class="{{ (app.request.cookies.get('saveOldName') is null or app.request.cookies.get('saveOldName')==='1') ? 'checked' : '' }}" style="width:20px; height:20px; border:1px solid #ced4da; color:#255687; font-family:Arial, sans-serif; padding: 0 2px 2px">{{ (app.request.cookies.get('saveOldName') is null or app.request.cookies.get('saveOldName')==='1') ? '✔' : '' }}</div> 
+                <div id="saveOldFilename" class="ml-2" style="cursor:pointer">UWAGA! Zaznaczone jeśli chcesz nadpisać plik bez zmiany nazwy</div>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", (event) => {
+            const saveOldFilename = document.getElementById('saveOldFilename');
+            const saveOldFilenameBg = document.getElementById('saveOldFilenameBg');
+            let cookieVal;
+            saveOldFilename.addEventListener('click', ()=>{
+                if( saveOldFilenameBg.classList.contains('checked') ) {       
+                    saveOldFilenameBg.classList.remove('checked');
+                    saveOldFilenameBg.innerHTML = '';
+                    cookieVal = '0';
+                }
+                else{
+                    saveOldFilenameBg.classList.add('checked')
+                    saveOldFilenameBg.innerHTML = '✔';
+                    cookieVal = '1';
+                }
+                let expires = "";
+                const date = new Date();
+                date.setTime(date.getTime() + (1 * 24 * 60 * 60 * 1000)); 
+                expires = "; expires=" + date.toUTCString();
+                document.cookie = "saveOldName=" + cookieVal + expires + "; path=/"; 
+            })
+        });
+    </script>
+
 
     <editor-file
          :name='{{ name|json_encode }}'
@@ -42,4 +78,6 @@
          :pattern='{{ pattern|json_encode }}'
          :placeholder='{{ placeholder|json_encode }}'
     ></editor-file>
+
+
 {% endblock %}
