@@ -82,7 +82,7 @@
         "twig/intl-extra": "v3.16.0",
         "twig/twig": "v3.16.0",
         "ua-parser/uap-php": "v3.9.14",
-        "webimpress/safe-writer": "2.2.01",
+        "webimpress/safe-writer": "2.1",
         "webmozart/path-util": "2.3.0",
         "webonyx/graphql-php": "v14.11.10",
         "xemlock/htmlpurifier-html5": "v0.1.11",
