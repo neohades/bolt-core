@@ -23,7 +23,7 @@
         "doctrine/orm": "2.20.0",
         "drupol/composer-packages": "2.0.0",
         "embed/embed": "v3.4.18",
-        "erusev/parsedown": "v1.3.1",
+        "erusev/parsedown": "1.7",
         "fakerphp/faker": "v1.3.1",
         "jasny/twig-extensions": "v1.3.1",
         "knplabs/doctrine-behaviors": "2.5.0",
