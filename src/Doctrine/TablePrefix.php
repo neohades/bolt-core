@@ -36,6 +36,9 @@ class TablePrefix
         } catch (\Doctrine\DBAL\Exception $e) { 
         }
         $this->microservices = $microservices;
+        echo 'Zrzut z bazy danych:<br >';
+        var_dump($microservices);
+        echo '<br />';
         $this->setTablePrefixes($tablePrefix, $managerRegistry);
 
         // var_dump('vendor/bolt/core/src/Doctrine/TablePrefix.php:_construct', $this->tablePrefixes);
@@ -47,9 +50,11 @@ class TablePrefix
         $entityManager = $eventArgs->getEntityManager();
         $schemaManager = $entityManager->getConnection()->getSchemaManager();
         $tablesInDB = $schemaManager->listTableNames();
+
+        var_dump($tablesInDB);
        
         $tablePrefix = $this->getTablePrefix($entityManager);
-
+        
         if($this->microservices){
             $domain = $_SERVER['SERVER_NAME'] ?? 'default';
 
@@ -57,16 +62,45 @@ class TablePrefix
 
             $checkIfAdminUrl = $this->checkIfAdminUrl($_SERVER['REQUEST_URI'] ?? '/');
 
-            if( $sessionPrefix && $checkIfAdminUrl )
+            echo '<br>loadClass: SERVER_NAME:<br >';
+            var_dump($_SERVER['SERVER_NAME'] ?? 'undefined');
+            echo '<br />';
+            echo 'loadClass: domain:<br >';
+            var_dump($domain);
+            echo '<br />';
+            echo 'loadClass: sessionPrefix:<br >';
+            var_dump($sessionPrefix);
+            echo '<br />';
+            echo 'loadClass: REQUEST_URI:<br >';
+            var_dump($_SERVER['REQUEST_URI'] ?? 'undefined' );
+            echo '<br />';
+            echo 'loadClass: SCRIPT_NAME:<br >';
+            var_dump($_SERVER['SCRIPT_NAME'] ?? 'undefined' );
+            echo '<br />';
+            echo 'loadClass: HTTP_HOST:<br >';
+            var_dump($_SERVER['HTTP_HOST'] ?? 'undefined' );
+            echo '<br />';
+            echo 'loadClass: PHP_SELF:<br >';
+            var_dump($_SERVER['PHP_SELF'] ?? 'undefined' );
+            echo '<br />';
+            echo 'loadClass: checkIfAdminUrl:<br >';
+            var_dump($checkIfAdminUrl );
+            echo '<br />';
+
+            if( $sessionPrefix && $checkIfAdminUrl ){
                 $domainBasedPrefix = $this->checkIfPrefixIsAllowed( $sessionPrefix );
-            else
+                echo '<br>Warunek że sessionPrefix i jest adminem<br>'.$domainBasedPrefix.'<br><br>' ;
+            }
+            else{
                 $domainBasedPrefix = $this->checkIfPrefixIsAllowed( $this->microservices[$domain] ?? 'bolt' );
+                echo '<br>Warunek że sessionPrefix jest puste lub nie jest adminem<br>domena: '.$this->microservices[$domain].' --- prefixDomeny: '.$domainBasedPrefix.'<br><br>' ;
+            }
 
             if($domainBasedPrefix){
                 $tablePrefix = $domainBasedPrefix;
             }
         }
-
+        echo '<br>tablePrefix: <br>'.$tablePrefix.'<br><br>' ;
         if ($tablePrefix) {
             $classMetadata = $eventArgs->getClassMetadata();
 
@@ -74,6 +108,8 @@ class TablePrefix
                 || $classMetadata->getName() === $classMetadata->rootEntityName) {
                 $tableNameWithPrefix = $tablePrefix . $classMetadata->getTableName();
                 
+                echo '<br>tableNameWithPrefix: <br>'.$tableNameWithPrefix.'<br><br>' ;
+
                 /*  sprawdzenie czy istnieje tabela z danym prefixem, jeśli nie, to bierze
                     domyślny prefix 
                 */
@@ -85,6 +121,8 @@ class TablePrefix
                         'name' => $tablePrefix . $classMetadata->getTableName(),
                     ]
                 );
+
+                echo '<br>Końcowy warunek: <br>'.$tablePrefix . $classMetadata->getTableName().'<br><br>' ;
             }
 
             foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping) {
@@ -94,6 +132,8 @@ class TablePrefix
                 }
             }
         }
+
+        echo '<br><br><hr><br><br>';
     }
 
     private function checkIfPrefixIsAllowed(string $checkedPrefix): string|bool {
