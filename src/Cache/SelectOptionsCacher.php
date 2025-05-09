@@ -2,8 +2,14 @@
 
 namespace Bolt\Cache;
 
+use Bolt\Configuration\Config;
 use Bolt\Entity\Field;
+use Bolt\Repository\ContentRepository;
+use Bolt\Storage\Query;
 use Bolt\Twig\FieldExtension;
+use Bolt\Twig\Notifications;
+use Bolt\Utils\ContentHelper;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class SelectOptionsCacher extends FieldExtension implements CachingInterface
 {
@@ -11,12 +17,32 @@ class SelectOptionsCacher extends FieldExtension implements CachingInterface
 
     public const CACHE_CONFIG_KEY = 'selectoptions';
 
+    private SessionInterface $session;
+    private FieldExtension $decorated;
+
+    public function __construct(
+        SessionInterface $session,
+        FieldExtension $decorated, // Symfony wstrzyknie dekorowaną usługę tutaj
+        Notifications $notifications,
+        ContentRepository $contentRepository,
+        Config $config,
+        ContentHelper $contentHelper,
+        Query $query
+    ) {
+        parent::__construct($notifications, $contentRepository, $config, $contentHelper, $query);
+        $this->session = $session;
+        $this->decorated = $decorated;
+    }
+
     public function selectOptionsHelper(string $contentTypeSlug, array $params, Field $field, string $format): array
     {
-        $this->setCacheKey([$contentTypeSlug, $format] + $params);
+        $activeMicroservice = $this->session->get('CURRENT_SERVICE', 'default');
+        var_dump($activeMicroservice);
+
+        $this->setCacheKey([$activeMicroservice, $contentTypeSlug, $format] + $params);
         $this->setCacheTags($this->getTags($contentTypeSlug));
 
-        return $this->execute([parent::class, __FUNCTION__], [$contentTypeSlug, $params, $field, $format]);
+        return $this->execute([$this->decorated, __FUNCTION__], [$contentTypeSlug, $params, $field, $format]);
     }
 
     /**

@@ -75,14 +75,21 @@ final class BackendMenu implements BackendMenuBuilderInterface
             $username = '';
         }
 
-        $cacheKey = 'bolt.backendMenu_' . $locale . '_' . $this->backendUrl . '_' . $username;
+        // $activeMicroservice = $this->requestStack->getCurrentRequest()->getSession()->get('CURRENT_MICROSERVICES', 'default');
 
-        $menu = $this->cache->get($cacheKey, function (ItemInterface $item) {
-            $item->expiresAfter($this->config->get('general/caching/backend_menu'));
-            $item->tag('backendmenu');
+        // // Dodaj activeMicroservice do klucza cache
+        // $cacheKey = 'bolt.backendMenu_' . $locale . '_' . $this->backendUrl . '_' . $username . '_' . $activeMicroservice;
 
-            return $this->menuBuilder->buildAdminMenu();
-        });
+        // // $cacheKey = 'bolt.backendMenu_' . $locale . '_' . $this->backendUrl . '_' . $username;
+
+        // $menu = $this->cache->get($cacheKey, function (ItemInterface $item) {
+        //     $item->expiresAfter($this->config->get('general/caching/backend_menu'));
+        //     $item->tag('backendmenu');
+
+        //     return $this->menuBuilder->buildAdminMenu();
+        // });
+
+        $menu = $this->menuBuilder->buildAdminMenu();
 
         $this->stopwatch->stop('bolt.backendMenu');
 
