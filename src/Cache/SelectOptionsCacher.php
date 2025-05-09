@@ -37,7 +37,7 @@ class SelectOptionsCacher extends FieldExtension implements CachingInterface
     public function selectOptionsHelper(string $contentTypeSlug, array $params, Field $field, string $format): array
     {
         $activeMicroservice = $this->session->get('CURRENT_SERVICE', 'default');
-        var_dump($activeMicroservice);
+        // var_dump($activeMicroservice);
 
         $this->setCacheKey([$activeMicroservice, $contentTypeSlug, $format] + $params);
         $this->setCacheTags($this->getTags($contentTypeSlug));
