@@ -11,6 +11,7 @@ use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -60,5 +61,23 @@ class UserController extends TwigAwareController implements BackendZoneInterface
         ];
 
         return $this->render('@bolt/users/listing.html.twig', $twigVars);
+    }
+
+
+    
+    /**
+     * @Route("/users-list", name="bolt_users_list")
+     */
+    public function usersList(): JsonResponse
+    {        
+        $usersDb = $this->users->findUsers('', 'username');
+        $users = [];
+        if($usersDb){
+            foreach( $usersDb as $user){
+                $users[] = ['key'=>$user->getId(), 'value'=>$user->getUsername()];
+            }
+        }
+
+         return $this->json($users);
     }
 }

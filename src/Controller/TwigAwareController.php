@@ -268,6 +268,18 @@ class TwigAwareController extends AbstractController
             $params[$key] = '%' . $this->getFromRequest('filter') . '%';
         }
 
+        if ($this->request->get('start')) {
+            $start = $this->getFromRequest('start');
+            $end = $this->getFromRequest('end');
+            if( $end == '' )
+               $end = date('Y-m-d');
+            $params['createdAt'] = '> ' . $start . ' && < ' . $end;
+        }
+
+        if ($this->request->get('author')) {
+            $params['author'] = $this->getFromRequest('author');
+        }
+
         if ($this->request->get('taxonomy')) {
             $taxonomy = explode('=', $this->getFromRequest('taxonomy'));
             $params[$taxonomy[0]] = $taxonomy[1];

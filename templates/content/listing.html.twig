@@ -82,6 +82,41 @@
                         </select>
                     </p>
 
+                    <p>
+                        <strong>Filtruj po autorze</strong>:
+                        <select class="form-control" name="author" id="authorFilter" title="Filtruj po autorze">
+                                <option value="" {% if author is not defined or author is empty %}selected{% endif %}>
+                                    Wybierz autora
+                                </option>
+                        </select>
+                    </p>
+                    <p>
+                        <strong>Elementy od</strong>:
+                        <input
+                            class="form-control"
+                            type="text"
+                            name="start"
+                            id="start-filter"
+                            value="{{ filterStartDate }}"
+                            pattern="\d{4}-\d{2}-\d{2}" 
+                            placeholder="YYYY-MM-DD"
+                            inputmode="numeric"
+                        />
+                    </p>
+                    <p>
+                        <strong>Elementy do</strong>:
+                        <input
+                            class="form-control"
+                            type="text"
+                            name="end"
+                            id="end-filter"
+                            value="{{ filterEndDate }}"
+                            pattern="\d{4}-\d{2}-\d{2}" 
+                            placeholder="YYYY-MM-DD"
+                            inputmode="numeric"
+                        />
+                    </p>
+
                     {% if contentType.get('taxonomy') %}
                             {% for taxonomy in contentType.get('taxonomy') %}
                                 {% set taxonomyDefinition = config.get('taxonomies/' ~ taxonomy) %}
@@ -196,4 +231,31 @@
 
     {{ widgets('overview_aside_bottom') }}
 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        const authorFilter = document.getElementById('authorFilter');  
+        const selectedAuthor = "{{ authorValue }}";
+
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/bolt/users-list')
+                .then(response => response.json())
+                .then(data => {
+                    let htmlToSelect = '';
+                    data.forEach( (user)=>{
+                        const option = document.createElement('option');
+                        option.value = user.key;
+                        option.textContent = user.value;
+                        if(selectedAuthor == option.value)
+                            option.selected = true;
+                        authorFilter.appendChild(option);
+                    })  
+                })
+                .catch(err => console.error(err));
+        });
+
+    </script>
 {% endblock %}
