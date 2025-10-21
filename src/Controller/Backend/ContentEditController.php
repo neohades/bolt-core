@@ -241,6 +241,16 @@ class ContentEditController extends TwigAwareController implements BackendZoneIn
         ];
         $url = $this->urlGenerator->generate('bolt_content_edit', $urlParams);
 
+        $request = $this->container->get('request_stack')->getCurrentRequest();
+        // $referer = $request?->headers->get('referer');
+        $data = $request->request->all();
+        if($data['referer']){
+            $referer = $data['referer'];
+            if ($referer && !str_contains($referer, 'edit')) {
+                return new RedirectResponse($referer);
+            }
+        }
+        
         $event = new ContentEvent($content);
         $this->dispatcher->dispatch($event, ContentEvent::POST_SAVE);
 

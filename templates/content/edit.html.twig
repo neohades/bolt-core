@@ -57,6 +57,7 @@
 
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('editrecord') }}">
         <input type="hidden" name="_edit_locale" value="{{ currentlocale }}">
+        <input type="hidden" name="referer" value="{{ app.request.headers.get('referer') }}" />
         {# To prevent confusion in browsers about which submit to use when pressing 'enter', we
         provide this _input_ here. All browsers will use this as a default. See #454 on Github. #}
         <input type="submit" form="editcontent" style="display: none;" value="__('action.save')">

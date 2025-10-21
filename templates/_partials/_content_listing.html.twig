@@ -16,6 +16,8 @@
     }|json_encode }}"></listing-filter>
     <!-- end listing filter -->
 
+    {{ pager(records, template = '@bolt/helpers/_pager_bootstrap.html.twig', class="justify-content-center") }}
+
     <listing-table
     :labels="{{
     { 'actions':
