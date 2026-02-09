@@ -60,6 +60,9 @@ class ListingController extends TwigAwareController implements BackendZoneInterf
             'taxonomyName' => $taxonomyName,
             'taxonomyValue' => $taxonomyValue,
             'filterKey' => $this->getFromRequest('filterKey'),
+            'authorValue' => $this->getFromRequest('author'),
+            'filterStartDate'=> $this->getFromRequest('start'),
+            'filterEndDate'=> $this->getFromRequest('end') ? $this->getFromRequest('end') : date('Y-m-d')
         ]);
     }
 }
