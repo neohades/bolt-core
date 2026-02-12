@@ -430,7 +430,8 @@ class Content
      */
     public function updateModifiedAt(): void
     {
-        $this->setModifiedAt(new \DateTime());
+        if( $this->getFieldValue('changeupdatemodifiedat') === null || $this->getFieldValue('changeupdatemodifiedat') !== null && $this->getFieldValue('changeupdatemodifiedat')===true)
+            $this->setModifiedAt(new \DateTime());
     }
 
     public function getPublishedAt(): ?\DateTime
