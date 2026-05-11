@@ -430,8 +430,22 @@ class Content
      */
     public function updateModifiedAt(): void
     {
-        if( $this->getFieldValue('changeupdatemodifiedat') === null || $this->getFieldValue('changeupdatemodifiedat') !== null && $this->getFieldValue('changeupdatemodifiedat')===true)
-            $this->setModifiedAt(new \DateTime());
+        // Jeśli pole jest zdefiniowane w tym ContentType
+        if ($this->hasFieldDefined('changeupdatemodifiedat')) {
+            $changeField = $this->getFieldValue('changeupdatemodifiedat');
+
+            // Aktualizuj TYLKO jeśli zaznaczono checkbox (obsługa boolean i stringów z formularza)
+            if ($changeField === true || $changeField === '1' || $changeField === 'on') {
+                $this->setModifiedAt(new \DateTime());
+                // Zerujemy checkbox na false
+                $this->setFieldValue('changeupdatemodifiedat', false);
+            }
+            // W przeciwnym razie (pole istnieje, ale nie jest true/null) - nie rób nic!
+            return;
+        }
+
+        // Jeśli pola 'changeupdatemodifiedat' nie ma w konfiguracji - zachowaj standardowy automat Bolta
+        $this->setModifiedAt(new \DateTime());
     }
 
     public function getPublishedAt(): ?\DateTime
