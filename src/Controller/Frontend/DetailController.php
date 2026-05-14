@@ -78,9 +78,47 @@ class DetailController extends TwigAwareController implements FrontendZoneInterf
     public function getCspHeader(): JsonResponse{
         $contentType = ContentType::factory('settings', $this->config->get('contenttypes'));
         $recordCsp = $this->contentRepository->findOneByFieldValue('key_name', 'csp::text', $contentType);
-        if( $recordCsp->getFieldValue('content') )
+        if( $recordCsp && $recordCsp->getFieldValue('content') )
             return new JsonResponse([ 'csp'=> strip_tags( $recordCsp->getFieldValue('content') ) ]);
         else
             return new JsonResponse([ 'csp'=> false ]);
+    }
+
+    public function getCorsHeader(): JsonResponse{
+        $contentType = ContentType::factory('settings', $this->config->get('contenttypes'));
+        $recordCors = $this->contentRepository->findOneByFieldValue('key_name', 'headers::cors', $contentType);
+        if( $recordCors && $recordCors->getFieldValue('content') )
+            return new JsonResponse([ 'cors'=> strip_tags( $recordCors->getFieldValue('content') ) ]);
+        else
+            return new JsonResponse([ 'cors'=> false ]);
+    }
+
+    public function getGlobalHeaders(): JsonResponse{
+        $qb = $this->contentRepository->getQueryBuilder();
+        $connection = $qb->getEntityManager()->getConnection();
+
+        $allSettings = $this->contentRepository->findBy(['contentType' => 'settings']);
+        
+        $headers = [];
+        foreach($allSettings as $record) {
+            $key = (string)$record->getFieldValue('key_name');
+            if (strpos($key, 'headers::') === 0) {
+                $headerName = str_replace('headers::', '', $key);
+                $content = $record->getFieldValue('content');
+                if ($content) {
+                    $headers[$headerName] = trim(strip_tags((string)$content));
+                }
+            }
+        }
+
+        // Legacy support for specific keys if they are not in headers:: format
+        $contentType = ContentType::factory('settings', $this->config->get('contenttypes'));
+        
+        $recordCsp = $this->contentRepository->findOneByFieldValue('key_name', 'csp::text', $contentType);
+        if($recordCsp && $recordCsp->getFieldValue('content') && !isset($headers['Content-Security-Policy'])) {
+            $headers['Content-Security-Policy'] = trim(strip_tags((string)$recordCsp->getFieldValue('content')));
+        }
+        
+        return new JsonResponse($headers);
     }
 }

@@ -97,15 +97,19 @@ class TwigAwareController extends AbstractController
 
 
         // CSP - pobranie z bazy danych z ustawień lokalnych rekordu w którym key_name = 'csp::text', ustawienie headera w response, tylko dla nie-bolta
-        if (is_array($template) && !array_filter($template, function($value) { return strpos($value, 'bolt') !== false; }) || (is_string($template) && strpos($template, 'bolt') === false)) {
-            $recordCsp = $this->forward('Bolt\Controller\Frontend\DetailController::getCspHeader');
-            if($recordCsp){
-                $csp = json_decode($recordCsp->getContent(), true);
-                if( $csp['csp'] )
-                    $response->headers->set('Content-Security-Policy', trim($csp['csp']));
+        if (is_array($template) && !array_filter($template, function($value) { return strpos($value, 'bolt') !== false; }) || (is_string($template) && strpos($template, 'bolt') === false)) {       
+            $recordHeaders = $this->forward('Bolt\Controller\Frontend\DetailController::getGlobalHeaders');
+            if($recordHeaders){
+                $headers = json_decode($recordHeaders->getContent(), true);
+                if (is_array($headers)) {
+                    foreach($headers as $name => $value) {
+                        if ($value) {
+                            $response->headers->set($name, $value);
+                        }
+                    }
+                }
             }
         }
-
 
         return $response;
     }
